@@ -24,6 +24,26 @@ $forwarded_ports = {
   35729 => 35729
 }
 
+
+#https://stefanwrobel.com/how-to-make-vagrant-performance-not-suck
+host = RbConfig::CONFIG['host_os']
+
+# Give VM 1/4 system memory & access to all cpu cores on the host
+if host =~ /darwin/
+  $vm_cpus = `sysctl -n hw.ncpu`.to_i
+  # sysctl returns Bytes and we need to convert to MB
+  $vm_memory = `sysctl -n hw.memsize`.to_i / 1024 / 1024 / 4
+elsif host =~ /linux/
+  $vm_cpus = `nproc`.to_i
+  # meminfo shows KB and we need to convert to MB
+  $vm_memory = `grep 'MemTotal' /proc/meminfo | sed -e 's/MemTotal://' -e 's/ kB//'`.to_i / 1024 / 4
+else # sorry Windows folks, I can't help you
+  $vm_cpus = 2
+  $vm_memory = 1024
+end
+
+
+
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
 if ENV["NUM_INSTANCES"].to_i > 0 && ENV["NUM_INSTANCES"]
