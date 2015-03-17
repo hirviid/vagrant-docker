@@ -14,4 +14,6 @@ ADD entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod 700 /usr/local/bin/entrypoint.sh
 
+EXPOSE 9000
+
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
